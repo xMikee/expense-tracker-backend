@@ -71,4 +71,12 @@ export class TelegramService implements OnModuleInit {
     this.bot.launch();
     this.logger.log('Bot Telegram avviato');
   }
+
+  async sendMessage(chatId: string, text: string) {
+    if (!this.bot) {
+      this.logger.warn('Impossibile inviare messaggio: bot Telegram non attivo');
+      return;
+    }
+    await this.bot.telegram.sendMessage(chatId, text);
+  }
 }

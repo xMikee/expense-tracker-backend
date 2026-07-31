@@ -6,5 +6,6 @@ import { ExpensesModule } from '../expenses/expenses.module';
 @Module({
   imports: [LlmModule, ExpensesModule],
   providers: [TelegramService],
+  exports: [TelegramService],
 })
 export class TelegramModule {}
