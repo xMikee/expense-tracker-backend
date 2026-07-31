@@ -1,5 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { monthStartUTC } from '../common/date.util';
 
 interface SetAllocationDto {
   month: string; // "2026-08-01"
@@ -20,8 +21,7 @@ export class BudgetService {
       throw new BadRequestException(`Le percentuali devono sommare a 100 (attuale: ${total})`);
     }
 
-    const monthStart = new Date(dto.month);
-    monthStart.setDate(1);
+    const monthStart = monthStartUTC(new Date(dto.month));
 
     return this.prisma.budgetAllocation.upsert({
       where: { userId_month: { userId, month: monthStart } },
@@ -31,7 +31,7 @@ export class BudgetService {
   }
 
   async getAllocation(userId: string, month: Date) {
-    const monthStart = new Date(month.getFullYear(), month.getMonth(), 1);
+    const monthStart = monthStartUTC(month);
     return this.prisma.budgetAllocation.findUnique({
       where: { userId_month: { userId, month: monthStart } },
     });

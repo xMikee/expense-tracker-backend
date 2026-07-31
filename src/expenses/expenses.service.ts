@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ExpenseGateway } from '../websocket/expense.gateway';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { ExpenseType } from '@prisma/client';
+import { monthStartUTC, monthEndUTC } from '../common/date.util';
 
 @Injectable()
 export class ExpensesService {
@@ -48,8 +49,8 @@ export class ExpensesService {
    * scostamento per categoria e liquidità/investimento residuo.
    */
   async getMonthSummary(userId: string, referenceDate: Date) {
-    const monthStart = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), 1);
-    const monthEnd = new Date(referenceDate.getFullYear(), referenceDate.getMonth() + 1, 0, 23, 59, 59);
+    const monthStart = monthStartUTC(referenceDate);
+    const monthEnd = monthEndUTC(referenceDate);
 
     const [incomes, expenses, allocation] = await Promise.all([
       this.prisma.income.findMany({
