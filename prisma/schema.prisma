@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ExpenseType {
+  FIXED
+  VARIABLE
+}
+
+model User {
+  id                String             @id @default(uuid())
+  email             String             @unique
+  telegramChatId    String?            @unique // per collegare l'utente al suo chat Telegram
+  incomes           Income[]
+  expenses          Expense[]
+  fixedExpenses     FixedExpense[]
+  budgetAllocations BudgetAllocation[]
+  createdAt         DateTime           @default(now())
+}
+
+// Entrate: stipendio, freelance, altro
+model Income {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  source    String // "DF SRL", "Freelance", "NozzleLab"...
+  amount    Decimal
+  date      DateTime
+  recurring Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, date])
+}
+
+// Spese fisse create manualmente da te, generano automaticamente Expense ogni mese
+model FixedExpense {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  name        String // "Rata macchina", "Assicurazione auto"
+  amount      Decimal
+  category    String
+  subcategory String?
+  dayOfMonth  Int // giorno di addebito, es 15
+  active      Boolean   @default(true)
+  startDate   DateTime
+  endDate     DateTime? // null = a tempo indeterminato
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId, active])
+}
+
+// Tutte le spese effettive (sia quelle generate dalle fisse, sia le variabili da Telegram/manuali)
+model Expense {
+  id             String      @id @default(uuid())
+  userId         String
+  user           User        @relation(fields: [userId], references: [id])
+  amount         Decimal
+  description    String
+  category       String
+  subcategory    String?
+  type           ExpenseType
+  source         String // "telegram" | "manual" | "auto-fixed"
+  fixedExpenseId String? // riferimento se generata da una FixedExpense
+  date           DateTime
+  createdAt      DateTime    @default(now())
+
+  @@index([userId, date])
+  @@index([userId, type])
+}
+
+// Allocazione budget per mese (percentuali target)
+model BudgetAllocation {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  month        DateTime // primo giorno del mese di riferimento
+  fixedPct     Float    @default(30)
+  variablePct  Float    @default(20)
+  investPct    Float    @default(15)
+  taxPct       Float    @default(20)
+  liquidityPct Float    @default(15)
+
+  @@unique([userId, month])
+}
