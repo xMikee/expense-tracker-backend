@@ -15,6 +15,7 @@ enum ExpenseType {
 model User {
   id                String             @id @default(uuid())
   email             String             @unique
+  apiKey            String             @unique // usata dal client come header x-api-key
   telegramChatId    String?            @unique // per collegare l'utente al suo chat Telegram
   incomes           Income[]
   expenses          Expense[]

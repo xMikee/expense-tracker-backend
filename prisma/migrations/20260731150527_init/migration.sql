@@ -5,6 +5,7 @@ CREATE TYPE "ExpenseType" AS ENUM ('FIXED', 'VARIABLE');
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "apiKey" TEXT NOT NULL,
     "telegramChatId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -76,6 +77,9 @@ CREATE TABLE "BudgetAllocation" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_apiKey_key" ON "User"("apiKey");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_telegramChatId_key" ON "User"("telegramChatId");

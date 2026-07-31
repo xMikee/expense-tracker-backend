@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PrismaModule } from './prisma/prisma.module';
@@ -8,6 +8,8 @@ import { BudgetModule } from './budget/budget.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { LlmModule } from './llm/llm.module';
 import { WebsocketModule } from './websocket/websocket.module';
+import { UsersModule } from './users/users.module';
+import { AuthMiddleware } from './auth/auth.middleware';
 
 @Module({
   imports: [
@@ -20,6 +22,14 @@ import { WebsocketModule } from './websocket/websocket.module';
     FixedExpensesModule,
     BudgetModule,
     TelegramModule,
+    UsersModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .exclude({ path: 'users', method: RequestMethod.POST })
+      .forRoutes('*');
+  }
+}
