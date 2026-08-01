@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Req } from '@nestjs/common';
 import { FixedExpensesService } from './fixed-expenses.service';
 import { CreateFixedExpenseDto, UpdateFixedExpenseDto } from './dto/fixed-expense.dto';
 
@@ -24,5 +24,11 @@ export class FixedExpensesController {
   @Patch(':id/deactivate')
   deactivate(@Req() req, @Param('id') id: string) {
     return this.fixedExpensesService.deactivate(req.userId, id);
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  remove(@Req() req, @Param('id') id: string) {
+    return this.fixedExpensesService.remove(req.userId, id);
   }
 }

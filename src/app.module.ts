@@ -4,6 +4,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { PrismaModule } from './prisma/prisma.module';
 import { ExpensesModule } from './expenses/expenses.module';
 import { FixedExpensesModule } from './fixed-expenses/fixed-expenses.module';
+import { IncomesModule } from './incomes/incomes.module';
 import { BudgetModule } from './budget/budget.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { LlmModule } from './llm/llm.module';
@@ -21,6 +22,7 @@ import { AuthMiddleware } from './auth/auth.middleware';
     WebsocketModule,
     ExpensesModule,
     FixedExpensesModule,
+    IncomesModule,
     BudgetModule,
     TelegramModule,
     UsersModule,

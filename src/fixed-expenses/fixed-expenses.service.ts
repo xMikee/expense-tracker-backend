@@ -64,6 +64,13 @@ export class FixedExpensesService {
     return this.prisma.fixedExpense.findFirstOrThrow({ where: { id, userId } });
   }
 
+  async remove(userId: string, id: string) {
+    const result = await this.prisma.fixedExpense.deleteMany({ where: { id, userId } });
+    if (result.count === 0) {
+      throw new NotFoundException('Spesa fissa non trovata');
+    }
+  }
+
   /**
    * Cron giornaliero: per ogni spesa fissa attiva il cui dayOfMonth coincide
    * con oggi, genera automaticamente la Expense corrispondente (se non già creata).
