@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { ExpensesService } from '../expenses/expenses.service';
@@ -37,22 +37,31 @@ export class FixedExpensesService {
     });
   }
 
-  update(id: string, dto: UpdateFixedExpenseDto) {
-    return this.prisma.fixedExpense.update({
-      where: { id },
+  async update(userId: string, id: string, dto: UpdateFixedExpenseDto) {
+    const result = await this.prisma.fixedExpense.updateMany({
+      where: { id, userId },
       data: {
         ...dto,
+        startDate: dto.startDate ? new Date(dto.startDate) : undefined,
         endDate: dto.endDate ? new Date(dto.endDate) : undefined,
       },
     });
+    if (result.count === 0) {
+      throw new NotFoundException('Spesa fissa non trovata');
+    }
+    return this.prisma.fixedExpense.findFirstOrThrow({ where: { id, userId } });
   }
 
   /** Stoppa una spesa fissa senza cancellarne lo storico */
-  deactivate(id: string) {
-    return this.prisma.fixedExpense.update({
-      where: { id },
+  async deactivate(userId: string, id: string) {
+    const result = await this.prisma.fixedExpense.updateMany({
+      where: { id, userId },
       data: { active: false, endDate: new Date() },
     });
+    if (result.count === 0) {
+      throw new NotFoundException('Spesa fissa non trovata');
+    }
+    return this.prisma.fixedExpense.findFirstOrThrow({ where: { id, userId } });
   }
 
   /**

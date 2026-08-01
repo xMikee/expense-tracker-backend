@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ExpenseGateway } from '../websocket/expense.gateway';
 import { CreateExpenseDto } from './dto/create-expense.dto';
+import { UpdateExpenseDto } from './dto/update-expense.dto';
 import { ExpenseType } from '@prisma/client';
 import { monthStartUTC, monthEndUTC } from '../common/date.util';
 
@@ -32,6 +33,24 @@ export class ExpensesService {
     this.gateway.emitBudgetUpdate(summary);
 
     return expense;
+  }
+
+  async update(userId: string, id: string, dto: UpdateExpenseDto) {
+    const result = await this.prisma.expense.updateMany({
+      where: { id, userId },
+      data: { ...dto, date: dto.date ? new Date(dto.date) : undefined },
+    });
+    if (result.count === 0) {
+      throw new NotFoundException('Spesa non trovata');
+    }
+    return this.prisma.expense.findFirstOrThrow({ where: { id, userId } });
+  }
+
+  async remove(userId: string, id: string) {
+    const result = await this.prisma.expense.deleteMany({ where: { id, userId } });
+    if (result.count === 0) {
+      throw new NotFoundException('Spesa non trovata');
+    }
   }
 
   async findAll(userId: string, from?: Date, to?: Date) {

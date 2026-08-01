@@ -41,8 +41,20 @@ export class UpdateFixedExpenseDto {
   amount?: number;
 
   @IsOptional()
+  @IsString()
+  category?: string;
+
+  @IsOptional()
+  @IsString()
+  subcategory?: string;
+
+  @IsOptional()
   @IsBoolean()
   active?: boolean;
+
+  @IsOptional()
+  @IsDateString()
+  startDate?: string;
 
   @IsOptional()
   @IsDateString()
@@ -53,4 +65,8 @@ export class UpdateFixedExpenseDto {
   @Min(1)
   @Max(28)
   dayOfMonth?: number;
+
+  @IsOptional()
+  @IsString()
+  notes?: string;
 }

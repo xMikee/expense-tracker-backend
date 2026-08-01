@@ -17,12 +17,12 @@ export class FixedExpensesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateFixedExpenseDto) {
-    return this.fixedExpensesService.update(id, dto);
+  update(@Req() req, @Param('id') id: string, @Body() dto: UpdateFixedExpenseDto) {
+    return this.fixedExpensesService.update(req.userId, id, dto);
   }
 
   @Patch(':id/deactivate')
-  deactivate(@Param('id') id: string) {
-    return this.fixedExpensesService.deactivate(id);
+  deactivate(@Req() req, @Param('id') id: string) {
+    return this.fixedExpensesService.deactivate(req.userId, id);
   }
 }
