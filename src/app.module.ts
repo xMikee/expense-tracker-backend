@@ -12,6 +12,7 @@ import { WebsocketModule } from './websocket/websocket.module';
 import { UsersModule } from './users/users.module';
 import { ReportsModule } from './reports/reports.module';
 import { AuthMiddleware } from './auth/auth.middleware';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AuthMiddleware } from './auth/auth.middleware';
     TelegramModule,
     UsersModule,
     ReportsModule,
+    AuthModule,
   ],
 })
 export class AppModule implements NestModule {
