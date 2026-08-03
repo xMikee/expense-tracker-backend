@@ -16,6 +16,7 @@ model User {
   id                String             @id @default(uuid())
   email             String             @unique
   apiKey            String             @unique // usata dal client come header x-api-key
+  password          String             @default("") // hash bcrypt
   telegramChatId    String?            @unique // per collegare l'utente al suo chat Telegram
   incomes           Income[]
   expenses          Expense[]
