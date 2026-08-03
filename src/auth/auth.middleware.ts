@@ -12,7 +12,7 @@ export class AuthMiddleware implements NestMiddleware {
   async use(req: any, res: any, next: () => void) {
     const authHeader = req.headers['authorization'];
 
-    if (authHeader?.startsWith('Bearer ')) {
+    if (authHeader?.toLowerCase().startsWith('bearer ')) {
       const token = authHeader.slice('Bearer '.length);
       try {
         const payload = await this.jwt.verifyAsync(token);
