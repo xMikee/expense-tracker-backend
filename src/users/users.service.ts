@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
+import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 
@@ -7,14 +8,18 @@ import { CreateUserDto } from './dto/create-user.dto';
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(dto: CreateUserDto) {
+  async create(dto: CreateUserDto) {
     const apiKey = randomBytes(24).toString('hex');
-    return this.prisma.user.create({
+    const password = await bcrypt.hash(dto.password, 10);
+    const user = await this.prisma.user.create({
       data: {
         email: dto.email,
         telegramChatId: dto.telegramChatId,
         apiKey,
+        password,
       },
     });
+    const { password: _omit, ...safeUser } = user;
+    return safeUser;
   }
 }
